@@ -1,4 +1,4 @@
-package com.smartfuel.vehicle_service.repository.controller;
+package com.smartfuel.vehicle_service.controller;
 
 import com.smartfuel.vehicle_service.model.Vehicle;
 import com.smartfuel.vehicle_service.repository.VehicleRepository;
