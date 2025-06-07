@@ -1,0 +1,31 @@
+<h2>Vehicle Registration</h2>
+
+<form (ngSubmit)="onSubmit()" #registerForm="ngForm">
+  <label>Owner Name:</label>
+  <input type="text" name="ownerName" [(ngModel)]="vehicle.ownerName" required /><br />
+
+  <label>NIC:</label>
+  <input type="text" name="nic" [(ngModel)]="vehicle.nic" required /><br />
+
+  <label>Vehicle Number:</label>
+  <input type="text" name="vehicleNumber" [(ngModel)]="vehicle.vehicleNumber" required /><br />
+
+  <label>Vehicle Type:</label>
+  <select name="vehicleType" [(ngModel)]="vehicle.vehicleType" required>
+    <option value="Car">Car</option>
+    <option value="Motorcycle">Motorcycle</option>
+    <option value="Truck">Truck</option>
+    <option value="Bus">Bus</option>
+    <option value="Van">Van</option>
+    <option value="Bicycle">Bicycle</option>
+    <option value="Other">Other</option>
+  </select><br />
+
+  <label>Fuel Type:</label>
+  <select name="fuelType" [(ngModel)]="vehicle.fuelType" required>
+    <option value="petrol">Petrol</option>
+    <option value="diesel">Diesel</option>
+  </select><br />
+
+  <button type="submit">Register</button>
+</form>
