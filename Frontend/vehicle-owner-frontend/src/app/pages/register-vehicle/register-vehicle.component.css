@@ -1,0 +1,147 @@
+  .registration-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 1rem;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .registration-card {
+    width: 100%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.7); 
+    backdrop-filter: blur(10px); 
+    -webkit-backdrop-filter: blur(100px); 
+    border: 1px solid rgba(255, 255, 255, 0.3); 
+  }
+  
+  .registration-card mat-card-header {
+    display: flex;
+    justify-content: center;    
+    margin-bottom: 1.5rem;
+  }
+  
+  .registration-card mat-card-title {
+    display: flex;
+    justify-content: center;
+    font-size: 1.8rem;
+    font-weight: 500;
+    color: #333;
+  }
+  
+  .registration-card mat-card-subtitle {
+    
+    color: #666;
+    margin-top: 0.5rem;
+  }
+  
+  .section {
+    margin-bottom: 2rem;
+  }
+  
+  .section-title {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e0e0e0;
+  }
+  
+  .form-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .full-width {
+    width: 100%;
+  }
+  
+  .half-width {
+    flex: 1;
+  }
+  
+  .card-actions {
+    padding: 1.5rem;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .register-btn {
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+    font-weight: 500;
+    min-width: 150px;
+  }
+  
+  .register-btn mat-icon {
+    margin-right: 0.5rem;
+  }
+  
+  /* Tablet Styles */
+  @media (max-width: 768px) {
+    .registration-container {
+      margin: 1rem auto;
+      padding: 0.5rem;
+    }
+    
+    .registration-card {
+      margin: 0;
+    }
+    
+    .form-row {
+      flex-direction: column;
+      gap: 0;
+    }
+    
+    .half-width {
+      width: 100%;
+    }
+  }
+  
+  /* Mobile Styles */
+  @media (max-width: 480px) {
+    .registration-container {
+      margin: 0;
+      padding: 0.25rem;
+    }
+    
+    .registration-card {
+      border-radius: 8px;
+    }
+    
+    .registration-card mat-card-title {
+      font-size: 1.5rem;
+    }
+    
+    .section-title {
+      font-size: 1.1rem;
+    }
+    
+    .card-actions {
+      padding: 1rem;
+    }
+    
+    .register-btn {
+      width: 100%;
+      min-width: unset;
+    }
+  }
+  
+  /* Form field customization */
+  .mat-form-field {
+    margin-bottom: 0.5rem;
+  }
+  
+  .mat-form-field-appearance-outline .mat-form-field-outline {
+    border-radius: 8px;
+  }
+  
+  /* Loading state for button */
+  .register-btn:disabled {
+    opacity: 0.6;
+  }

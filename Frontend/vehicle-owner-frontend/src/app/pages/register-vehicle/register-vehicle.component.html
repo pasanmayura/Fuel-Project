@@ -1,31 +1,155 @@
-<h2>Vehicle Registration</h2>
+<div class="registration-container">
+  <mat-card class="registration-card">
+    <mat-card-header>
+      <mat-card-title>Vehicle Registration</mat-card-title>
+      <mat-card-subtitle>Register your vehicle and create an account</mat-card-subtitle>
+    </mat-card-header>
 
-<form (ngSubmit)="onSubmit()" #registerForm="ngForm">
-  <label>Owner Name:</label>
-  <input type="text" name="ownerName" [(ngModel)]="vehicle.ownerName" required /><br />
+    <mat-card-content>
+      <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
+        
+        <!-- Vehicle Details Section -->
+        <div class="section">
+          <h3 class="section-title">Vehicle Details</h3>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Vehicle Number</mat-label>
+              <input matInput 
+                     name="vehicleNumber" 
+                     [(ngModel)]="vehicle.vehicleNumber" 
+                     required 
+                     placeholder="Enter vehicle number">
+              <mat-error>Vehicle number is required</mat-error>
+            </mat-form-field>
+          </div>
 
-  <label>NIC:</label>
-  <input type="text" name="nic" [(ngModel)]="vehicle.nic" required /><br />
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Vehicle Type</mat-label>
+              <mat-select name="vehicleType" [(ngModel)]="vehicle.vehicleType" required>
+                <mat-option value="Car">Car</mat-option>
+                <mat-option value="Motorcycle">Motorcycle</mat-option>
+                <mat-option value="Truck">Truck</mat-option>
+                <mat-option value="Bus">Bus</mat-option>
+                <mat-option value="Van">Van</mat-option>
+                <mat-option value="Bicycle">Bicycle</mat-option>
+                <mat-option value="Other">Other</mat-option>
+              </mat-select>
+              <mat-error>Vehicle type is required</mat-error>
+            </mat-form-field>
 
-  <label>Vehicle Number:</label>
-  <input type="text" name="vehicleNumber" [(ngModel)]="vehicle.vehicleNumber" required /><br />
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Fuel Type</mat-label>
+              <mat-select name="fuelType" [(ngModel)]="vehicle.fuelType" required>
+                <mat-option value="Petrol">Petrol</mat-option>
+                <mat-option value="Diesel">Diesel</mat-option>
+              </mat-select>
+              <mat-error>Fuel type is required</mat-error>
+            </mat-form-field>
+          </div>
+        </div>
 
-  <label>Vehicle Type:</label>
-  <select name="vehicleType" [(ngModel)]="vehicle.vehicleType" required>
-    <option value="Car">Car</option>
-    <option value="Motorcycle">Motorcycle</option>
-    <option value="Truck">Truck</option>
-    <option value="Bus">Bus</option>
-    <option value="Van">Van</option>
-    <option value="Bicycle">Bicycle</option>
-    <option value="Other">Other</option>
-  </select><br />
+        <!-- Account Details Section -->
+        <div class="section">
+          <h3 class="section-title">Account Details</h3>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>First Name</mat-label>
+              <input matInput 
+                     name="firstName" 
+                     [(ngModel)]="vehicle.firstName" 
+                     required 
+                     placeholder="Enter first name">
+              <mat-error>First name is required</mat-error>
+            </mat-form-field>
 
-  <label>Fuel Type:</label>
-  <select name="fuelType" [(ngModel)]="vehicle.fuelType" required>
-    <option value="petrol">Petrol</option>
-    <option value="diesel">Diesel</option>
-  </select><br />
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Last Name</mat-label>
+              <input matInput 
+                     name="lastName" 
+                     [(ngModel)]="vehicle.lastName" 
+                     required 
+                     placeholder="Enter last name">
+              <mat-error>Last name is required</mat-error>
+            </mat-form-field>
+          </div>
 
-  <button type="submit">Register</button>
-</form>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>NIC</mat-label>
+              <input matInput 
+                     name="nic" 
+                     [(ngModel)]="vehicle.nic" 
+                     required 
+                     placeholder="Enter NIC number">
+              <mat-error>NIC is required</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Username</mat-label>
+              <input matInput 
+                     name="username" 
+                     [(ngModel)]="account.username" 
+                     required 
+                     placeholder="Enter username">
+              <mat-error>Username is required</mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Email</mat-label>
+              <input matInput 
+                     type="email" 
+                     name="email" 
+                     [(ngModel)]="account.email" 
+                     required 
+                     placeholder="Enter email address">
+              <mat-error>Valid email is required</mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Password</mat-label>
+              <input matInput 
+                     type="password" 
+                     name="password" 
+                     [(ngModel)]="account.password" 
+                     required 
+                     placeholder="Enter password">
+              <mat-error>Password is required</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Confirm Password</mat-label>
+              <input matInput 
+                     type="password" 
+                     name="cpassword" 
+                     [(ngModel)]="account.cpassword" 
+                     required 
+                     placeholder="Confirm password">
+              <mat-error *ngIf="account.password !== account.cpassword">Passwords do not match</mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+
+      </form>
+    </mat-card-content>
+
+    <mat-card-actions class="card-actions">
+      <button mat-raised-button 
+              color="primary" 
+              type="submit" 
+              class="register-btn"
+              [disabled]="!registerForm.valid || account.password !== account.cpassword"
+              (click)="onSubmit()">
+        <mat-icon>how_to_reg</mat-icon>
+        Register
+      </button>
+    </mat-card-actions>
+
+  </mat-card>
+</div>
