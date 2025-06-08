@@ -14,11 +14,15 @@ public class Vehicle {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String ownerName;
+    private String firstName;
+    private String lastName;
     private String nic;
     private String vehicleNumber;
     private String vehicleType;
     private String fuelType;
     private String qrCode;
-    
+
+    @ManyToOne
+    @JoinColumn(name = "account_id", nullable = false)
+    private Account account;    
 }
