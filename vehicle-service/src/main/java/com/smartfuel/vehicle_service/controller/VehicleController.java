@@ -11,6 +11,7 @@ import com.smartfuel.vehicle_service.response.VehicleResponseDTO;
 import com.smartfuel.vehicle_service.mock.MockDmtDatabase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import com.smartfuel.vehicle_service.util.JwtUtil;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,6 +26,9 @@ public class VehicleController {
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @PostMapping("/register")
     public VehicleResponseDTO registerVehicle(@RequestBody VehicleRegistrationRequestDTO request) {
@@ -83,11 +87,15 @@ public class VehicleController {
             throw new IllegalArgumentException("Invalid username or password");
         }
 
+        // Generate JWT token
+        String token = jwtUtil.generateToken(account.getUsername(), account.getRole());
+
         // Return a structured response
         return new LoginResponseDTO(
                 "Login successful",
                 account.getUsername(),
-                account.getRole()
+                account.getRole(),
+                token
         );
     }
 }
