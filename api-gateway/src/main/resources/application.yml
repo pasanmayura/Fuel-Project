@@ -12,11 +12,21 @@ spring:
             - Path=/vehicle-service/**
           filters:
             - StripPrefix=1
+            
+        - id: station-service
+          uri: lb://station-service
+          predicates:
+            - Path=/station-service/**
+          filters:
+            - StripPrefix=1
 
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
+    register-with-eureka: true
+    fetch-registry: true
+
 
 logging:
   level:
