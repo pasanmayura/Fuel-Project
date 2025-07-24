@@ -21,6 +21,7 @@ public class Vehicle {
     private String vehicleType;
     private String fuelType;
     private String qrCode;
+    private Integer fuelQuota;
 
     @ManyToOne
     @JoinColumn(name = "account_id", nullable = false)

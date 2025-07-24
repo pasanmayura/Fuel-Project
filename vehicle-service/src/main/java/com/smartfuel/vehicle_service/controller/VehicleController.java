@@ -11,6 +11,8 @@ import com.smartfuel.vehicle_service.response.VehicleResponseDTO;
 import com.smartfuel.vehicle_service.mock.MockDmtDatabase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import com.smartfuel.vehicle_service.util.FuelQuotaUtil;
 import com.smartfuel.vehicle_service.util.JwtUtil;
 import org.springframework.web.bind.annotation.*;
 
@@ -64,7 +66,8 @@ public class VehicleController {
         vehicle.setVehicleNumber(request.getVehicle().getVehicleNumber());
         vehicle.setVehicleType(request.getVehicle().getVehicleType());
         vehicle.setFuelType(request.getVehicle().getFuelType());
-        vehicle.setQrCode("QR-" + request.getVehicle().getVehicleNumber()); 
+        vehicle.setQrCode("QR-" + request.getVehicle().getVehicleNumber());
+        vehicle.setFuelQuota(FuelQuotaUtil.getFuelQuota(request.getVehicle().getVehicleType())); 
         vehicle.setAccount(account);
         vehicleRepository.save(vehicle);
 
