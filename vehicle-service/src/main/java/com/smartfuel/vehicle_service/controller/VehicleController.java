@@ -1,10 +1,12 @@
 package com.smartfuel.vehicle_service.controller;
 
+import com.smartfuel.vehicle_service.dto.LoginRequestDTO;
 import com.smartfuel.vehicle_service.dto.VehicleRegistrationRequestDTO;
 import com.smartfuel.vehicle_service.model.Account;
 import com.smartfuel.vehicle_service.model.Vehicle;
 import com.smartfuel.vehicle_service.repository.AccountRepository;
 import com.smartfuel.vehicle_service.repository.VehicleRepository;
+import com.smartfuel.vehicle_service.response.LoginResponseDTO;
 import com.smartfuel.vehicle_service.response.VehicleResponseDTO;
 import com.smartfuel.vehicle_service.mock.MockDmtDatabase;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,5 +70,24 @@ public class VehicleController {
             vehicle.getVehicleNumber(),
             account.getUsername()
         );    
+    }
+
+    @PostMapping("/auth/login")
+    public LoginResponseDTO login(@RequestBody LoginRequestDTO request) {
+        // Find the account by username
+        Account account = accountRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
+
+        // Validate the password
+        if (!passwordEncoder.matches(request.getPassword(), account.getPassword())) {
+            throw new IllegalArgumentException("Invalid username or password");
+        }
+
+        // Return a structured response
+        return new LoginResponseDTO(
+                "Login successful",
+                account.getUsername(),
+                account.getRole()
+        );
     }
 }
