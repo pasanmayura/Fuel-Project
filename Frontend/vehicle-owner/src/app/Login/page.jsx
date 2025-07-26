@@ -1,18 +1,23 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { Lock } from 'lucide-react';
 import AuthForm from '@/components/auth/AuthForm';
 import { login } from '@/service/authservice';
 
 export default function LoginPage() {
+  const router = useRouter();
   const handleLogin = async (formData) => {
+    
     try {
       const response = await login(formData);
       console.log('Login successful:', response);
-      // Handle successful login (e.g., save token, redirect)
+      alert('Login successful! Redirecting to dashboard...');
+      sessionStorage.setItem('token', response.token);
+      router.push('/dashboard');
     } catch (error) {
       console.error('Login error:', error);
-      // Handle login error (e.g., show error message)
+      alert('Login failed. Please check your credentials and try again.');
     }
   };
 
