@@ -9,6 +9,10 @@ import com.smartfuel.vehicle_service.repository.VehicleRepository;
 import com.smartfuel.vehicle_service.response.LoginResponseDTO;
 import com.smartfuel.vehicle_service.response.VehicleResponseDTO;
 import com.smartfuel.vehicle_service.mock.MockDmtDatabase;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -100,5 +104,45 @@ public class VehicleController {
                 account.getRole(),
                 token
         );
+    }
+
+    @GetMapping("/users/me")
+    public Map<String, String> getUserDetails(@RequestHeader("Authorization") String token) {
+        // Extract username from the JWT token
+        String username = jwtUtil.extractUsername(token.substring(7)); // Remove "Bearer " prefix
+
+        // Find the account by username
+        Account account = accountRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        // Find the vehicle associated with the account
+        Vehicle vehicle = vehicleRepository.findByAccount(account)
+                .orElseThrow(() -> new IllegalArgumentException("Vehicle not found"));
+
+        // Return user details
+        Map<String, String> userDetails = new HashMap<>();
+        userDetails.put("username", account.getUsername());
+        userDetails.put("vehicleType", vehicle.getVehicleType());
+        userDetails.put("vehicleNumber", vehicle.getVehicleNumber());
+        return userDetails;
+    }
+
+    @GetMapping("/{vehicleNumber}/quota")
+    public Map<String, Integer> getQuotaDetails(@PathVariable String vehicleNumber) {
+        // Find the vehicle by vehicle number
+        Vehicle vehicle = vehicleRepository.findByVehicleNumber(vehicleNumber)
+                .orElseThrow(() -> new IllegalArgumentException("Vehicle not found"));
+
+        // Get the monthly quota based on the vehicle type
+        int monthlyQuota = FuelQuotaUtil.getFuelQuota(vehicle.getVehicleType());
+
+        // Get the remaining quota from the database
+        int remainingQuota = vehicle.getFuelQuota();
+
+        // Return quota details
+        Map<String, Integer> quotaDetails = new HashMap<>();
+        quotaDetails.put("monthlyQuota", monthlyQuota);
+        quotaDetails.put("remainingQuota", remainingQuota);
+        return quotaDetails;
     }
 }
