@@ -1,8 +1,11 @@
 'use client';
 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Home, Users, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import ConfirmationDialog from '@/components/dashboard/ConfirmationDialog';
 
 const menuItems = [
   { id: 'dashboard', name: 'Dashboard', icon: Home, href: '/dashboard' },
@@ -10,7 +13,23 @@ const menuItems = [
 ];
 
 export default function Sidebar() {
+  const router = useRouter();
   const pathname = usePathname();
+  const [openDialog, setOpenDialog] = useState(false);
+
+  // Log out
+  const handleLogout = () => {
+    sessionStorage.removeItem('token');
+    router.push('/');
+  };
+
+  const openConfirmationDialog = () => {
+    setOpenDialog(true);
+  };
+
+  const closeConfirmationDialog = () => {
+    setOpenDialog(false);
+  };
 
   return (
     <div className="w-64 bg-white shadow-lg h-full">
@@ -37,11 +56,18 @@ export default function Sidebar() {
         </ul>
       </nav>
       <div className="absolute bottom-4 left-4">
-        <button className="flex items-center w-65 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg">
-          <LogOut className="w-5 h-5 mr-3" />
+        <button className="flex items-center w-65 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg" onClick={openConfirmationDialog}>
+          <LogOut className="w-5 h-5 mr-3"/>
           Logout
         </button>
       </div>
+      <ConfirmationDialog
+        open={openDialog}
+        onClose={closeConfirmationDialog}
+        onConfirm={handleLogout}
+        title="Confirm Logout"
+        message="Are you sure you want to Log out ?"
+      />
     </div>
   );
 }
