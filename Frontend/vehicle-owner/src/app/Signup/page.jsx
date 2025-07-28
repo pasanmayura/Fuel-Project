@@ -52,6 +52,7 @@ export default function SignUp() {
     try {
       const response = await signup(requestData); // Send the structured data to the signup service
       console.log('Signup successful:', response); // Log the successful response
+      alert('Signup successful!'); // Show success message
       router.push('/'); // Redirect to the login page
     } catch (error) {
       console.error('Signup error:', error); // Log the error
