@@ -28,12 +28,12 @@ export default function Topbar() {
   }, []);
 
   return (
-    <div className="bg-white border-b border-indigo-500 shadow-sm px-10 py-6 flex justify-between items-center">
+    <div className="bg-white border-b border-indigo-500 shadow-sm px-10 py-6 flex justify-end items-center">
       
       <div className="flex items-center space-x-4">
         
-      <CircleUserRound className="w-8 h-8 text-gray-700" />
-      <span className="hidden sm:block font-medium text-gray-700">{username}</span>
+      <CircleUserRound className="w-10 h-10 text-gray-700" />
+      <span className="hidden sm:block font-medium text-gray-700 text-lg">{username}</span>
         
       </div>
     </div>
