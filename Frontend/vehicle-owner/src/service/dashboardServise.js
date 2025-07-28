@@ -48,3 +48,20 @@ export const getQRCode = async (vehicleNumber, token) => {
     throw error;
   }
 }
+
+/**
+ * Change user password
+ * @param {*} token - JWT token for authentication
+ * @param {Object} passwordData - Contains currentPassword, newPassword, and confirmPassword
+ */
+export const changePassword = async (token, passwordData) => {
+  const config = {
+    headers: { Authorization: `Bearer ${token}` },
+  };
+  const response = await axios.post(
+    `${API_BASE_URL}/users/change-password`,
+    passwordData,
+    config
+  );
+  return response.data;
+};

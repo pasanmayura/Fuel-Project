@@ -140,6 +140,11 @@ public class VehicleController {
 
         // Return user details
         Map<String, String> userDetails = new HashMap<>();
+        userDetails.put("firstName", vehicle.getFirstName());
+        userDetails.put("lastName", vehicle.getLastName());
+        userDetails.put("nic", vehicle.getNic());
+        userDetails.put("phoneNumber", vehicle.getPhoneNumber());
+        userDetails.put("email", account.getEmail());
         userDetails.put("username", account.getUsername());
         userDetails.put("vehicleType", vehicle.getVehicleType());
         userDetails.put("vehicleNumber", vehicle.getVehicleNumber());
@@ -210,4 +215,35 @@ public class VehicleController {
         }
     }
     
+    @PostMapping("/users/change-password")
+    public ResponseEntity<String> changePassword(
+            @RequestHeader("Authorization") String token,
+            @RequestBody Map<String, String> passwordData) {
+
+        // Extract username from the JWT token
+        String username = jwtUtil.extractUsername(token.substring(7));
+
+        // Find the account by username
+        Account account = accountRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        // Validate the current password
+        String currentPassword = passwordData.get("currentPassword");
+        if (!passwordEncoder.matches(currentPassword, account.getPassword())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Current password is incorrect");
+        }
+
+        // Validate the new password and confirm password
+        String newPassword = passwordData.get("newPassword");
+        String confirmPassword = passwordData.get("confirmPassword");
+        if (!newPassword.equals(confirmPassword)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("New password and confirm password do not match");
+        }
+
+        // Update the password
+        account.setPassword(passwordEncoder.encode(newPassword));
+        accountRepository.save(account);
+
+        return ResponseEntity.ok("Password updated successfully");
+    }
 }
