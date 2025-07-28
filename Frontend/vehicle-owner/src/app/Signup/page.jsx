@@ -1,15 +1,16 @@
 'use client';
 
-import { useRouter } from 'next/navigation'; // Import useRouter
+import { useRouter } from 'next/navigation';
 import { UserPlus } from 'lucide-react';
 import { useState } from 'react';
-import { User, CarFront, IdCard, BusFront, Fuel, Mail, Lock, CircleUser } from 'lucide-react';
+import { User, CarFront, IdCard, BusFront, Fuel, Mail, Lock, CircleUser, Phone } from 'lucide-react';
 import SubmitButton from '@/components/auth/SubmitButton';
 import InputField from '@/components/auth/InputField';
 import { signup } from '@/service/authservice';
+import { signupSchema } from '@/utils/validationSchemas';
 
 export default function SignUp() {
-  const router = useRouter(); // Initialize useRouter
+  const router = useRouter();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -22,40 +23,57 @@ export default function SignUp() {
     password: '',
     confirmPassword: '',
   });
-  const [error, setError] = useState(''); // State for error message
-  const [activeTab, setActiveTab] = useState(1); // State for active tab
+  const [error, setError] = useState('');
+  const [validationErrors, setValidationErrors] = useState({});
+  const [activeTab, setActiveTab] = useState(1);
 
   const handleSignUp = async () => {
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
-
-    const requestData = {
-      vehicle: {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        nic: formData.nic,
-        vehicleNumber: formData.vehicleNumber,
-        vehicleType: formData.vehicleType,
-        fuelType: formData.fuelType,
-      },
-      account: {
-        username: formData.username,
-        password: formData.password,
-        email: formData.email,
-      },
-    };
-
-    console.log('Request Data:', requestData); // Log the request data
-
     try {
-      const response = await signup(requestData); // Send the structured data to the signup service
-      console.log('Signup successful:', response); // Log the successful response
+      // Validate the form data using Yup
+      await signupSchema.validate(formData, { abortEarly: false });
+      setValidationErrors({}); // Clear validation errors
+  
+      const requestData = {
+        vehicle: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          nic: formData.nic,
+          phoneNumber: formData.phoneNumber,
+          vehicleNumber: formData.vehicleNumber,
+          vehicleType: formData.vehicleType,
+          fuelType: formData.fuelType,
+        },
+        account: {
+          username: formData.username,
+          password: formData.password,
+          email: formData.email,
+        },
+      };
+  
+      console.log('Request Data:', requestData);
+  
+      const response = await signup(requestData);
+  
+      // Show success alert
+      alert(response.data.message || 'Signup successful!');
       router.push('/'); // Redirect to the login page
-    } catch (error) {
-      console.error('Signup error:', error); // Log the error
-      setError(error.response?.data?.message || 'An error occurred during signup');
+    } catch (err) {
+      if (err.name === 'ValidationError') {
+        const errors = {};
+        err.inner.forEach(validationError => {
+          errors[validationError.path] = validationError.message;
+        });
+        setValidationErrors(errors);
+  
+        // Show validation error alert
+        alert('Validation errors occurred. Please check the form fields.');
+      } else {
+        // Extract the error message from the backend response
+        const errorMessage = err.response?.data?.message || 'An error occurred during signup';
+        alert(errorMessage); // Show the backend error message as an alert
+        console.error('Signup error:', errorMessage); // Log the error message for debugging
+        setError(errorMessage);
+      }
     }
   };
 
@@ -120,6 +138,7 @@ export default function SignUp() {
                   onChange={handleInputChange}
                   required={true}
                 />
+                {validationErrors.firstName && <p className="text-red-500 text-sm mt-1">{validationErrors.firstName}</p>}
 
                 {/* Last Name */}
                 <InputField
@@ -131,6 +150,7 @@ export default function SignUp() {
                   onChange={handleInputChange}
                   required={true}
                 />
+                {validationErrors.lastName && <p className="text-red-500 text-sm mt-1">{validationErrors.lastName}</p>}
 
                 {/* NIC */}
                 <InputField
@@ -142,6 +162,7 @@ export default function SignUp() {
                   onChange={handleInputChange}
                   required={true}
                 />
+                {validationErrors.nic && <p className="text-red-500 text-sm mt-1">{validationErrors.nic}</p>}
 
                 {/* Vehicle Number */}
                 <InputField
@@ -153,6 +174,7 @@ export default function SignUp() {
                   onChange={handleInputChange}
                   required={true}
                 />
+                {validationErrors.vehicleNumber && <p className="text-red-500 text-sm mt-1">{validationErrors.vehicleNumber}</p>}
 
                 {/* Vehicle Type */}
                 <div className="relative group">
@@ -173,6 +195,7 @@ export default function SignUp() {
                     <option value="Bus">Bus</option>
                     <option value="Jeep">Jeep</option>
                   </select>
+                  {validationErrors.vehicleType && <p className="text-red-500 text-sm mt-1">{validationErrors.vehicleType}</p>}
                 </div>
 
                 {/* Fuel Type */}
@@ -190,6 +213,7 @@ export default function SignUp() {
                     <option value="Petrol">Petrol</option>
                     <option value="Diesel">Diesel</option>
                   </select>
+                  {validationErrors.fuelType && <p className="text-red-500 text-sm mt-1">{validationErrors.fuelType}</p>}
                 </div>
               </>
             )}
@@ -206,6 +230,7 @@ export default function SignUp() {
                   onChange={handleInputChange}
                   required={true}
                 />
+                {validationErrors.email && <p className="text-red-500 text-sm mt-1">{validationErrors.email}</p>}
 
                 {/* Username */}
                 <InputField
@@ -217,6 +242,19 @@ export default function SignUp() {
                   onChange={handleInputChange}
                   required={true}
                 />
+                {validationErrors.username && <p className="text-red-500 text-sm mt-1">{validationErrors.username}</p>}
+
+                {/* Phone Number */}
+                <InputField
+                  icon={<Phone className="h-5 w-5 text-indigo-500 group-focus-within:text-black transition-colors" />}
+                  name="phoneNumber"
+                  type="text"
+                  placeholder="Phone Number"
+                  value={formData.phoneNumber}
+                  onChange={handleInputChange}
+                  required={true}
+                />
+                {validationErrors.phoneNumber && <p className="text-red-500 text-sm mt-1">{validationErrors.phoneNumber}</p>}
 
                 {/* Password */}
                 <InputField
@@ -229,6 +267,7 @@ export default function SignUp() {
                   showToggle={true}
                   required={true}
                 />
+                {validationErrors.password && <p className="text-red-500 text-sm mt-1">{validationErrors.password}</p>}
 
                 {/* Confirm Password */}
                 <InputField
@@ -241,11 +280,7 @@ export default function SignUp() {
                   showToggle={true}
                   required={true}
                 />
-
-                {/* Error Message */}
-                {error && (
-                  <p className="text-red-500 text-sm mt-2">{error}</p>
-                )}
+                {validationErrors.confirmPassword && <p className="text-red-500 text-sm mt-1">{validationErrors.confirmPassword}</p>}
               </>
             )}
           </div>

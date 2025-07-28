@@ -7,6 +7,7 @@ public class VehicleDTO {
     private String firstName;
     private String lastName;
     private String nic;
+    private String phoneNumber;
     private String vehicleNumber;
     private String vehicleType;
     private String fuelType;
