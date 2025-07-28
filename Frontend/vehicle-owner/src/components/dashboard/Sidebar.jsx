@@ -55,7 +55,7 @@ export default function Sidebar() {
 
       {/* Sidebar */}
       <div className={`
-        w-[100%] bg-white shadow-lg h-screen flex flex-col
+        w-[100%] bg-white shadow-lg h-full flex flex-col
         lg:flex lg:relative
         ${isMobileMenuOpen ? 'flex' : 'hidden'}
         lg:translate-x-0
@@ -130,16 +130,15 @@ export default function Sidebar() {
               <ChevronRight className="w-4 h-4 text-red-400 group-hover:translate-x-1 transition-all duration-300" />
             </button>
           </div>
-        </div>
-        
-        <ConfirmationDialog
+        </div>       
+      </div>
+      <ConfirmationDialog
           open={openDialog}
           onClose={closeConfirmationDialog}
           onConfirm={handleLogout}
           title="Confirm Logout"
           message="Are you sure you want to Log out ?"
         />
-      </div>
     </>
   );
 }
