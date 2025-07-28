@@ -14,11 +14,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.smartfuel.vehicle_service.util.FuelQuotaUtil;
 import com.smartfuel.vehicle_service.util.JwtUtil;
 import org.springframework.web.bind.annotation.*;
+
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.qrcode.QRCodeWriter;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/vehicles")
@@ -73,6 +88,10 @@ public class VehicleController {
         vehicle.setQrCode("QR-" + request.getVehicle().getVehicleNumber());
         vehicle.setFuelQuota(FuelQuotaUtil.getFuelQuota(request.getVehicle().getVehicleType())); 
         vehicle.setAccount(account);
+        vehicleRepository.save(vehicle);
+
+        String qrCodePath = generateQRCode(request.getVehicle().getVehicleNumber());
+        vehicle.setQrCodePath(qrCodePath); // Save the QR code path in the database
         vehicleRepository.save(vehicle);
 
         // Return a structured response
@@ -145,4 +164,51 @@ public class VehicleController {
         quotaDetails.put("remainingQuota", remainingQuota);
         return quotaDetails;
     }
+
+    @GetMapping("/qr/{vehicleNumber}")
+    public ResponseEntity<byte[]> getQRCode(@PathVariable String vehicleNumber) {
+        try {
+            // Load the QR code file
+            String qrCodePath = "qr-codes/" + vehicleNumber + ".png";
+            Path path = FileSystems.getDefault().getPath(qrCodePath);
+            byte[] qrCodeBytes = Files.readAllBytes(path);
+
+            // Return the QR code as a downloadable file
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.IMAGE_PNG);
+            headers.setContentDisposition(ContentDisposition.attachment().filename(vehicleNumber + ".png").build());
+
+            return new ResponseEntity<>(qrCodeBytes, headers, HttpStatus.OK);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load QR code", e);
+        }
+    }
+
+
+    private String generateQRCode(String vehicleNumber) {
+        try {
+            QRCodeWriter qrCodeWriter = new QRCodeWriter();
+            String qrCodeText = vehicleNumber;
+            int width = 500;
+            int height = 500;
+            var bitMatrix = qrCodeWriter.encode(qrCodeText, BarcodeFormat.QR_CODE, width, height);
+    
+            // Make sure the folder exists
+            String folderName = "qr-codes";
+            Path folderPath = FileSystems.getDefault().getPath(folderName);
+            if (!Files.exists(folderPath)) {
+                Files.createDirectories(folderPath); 
+            }
+    
+            // Save QR code inside the folder
+            String qrCodePath = folderName + "/" + vehicleNumber + ".png";
+            Path path = FileSystems.getDefault().getPath(qrCodePath);
+            MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
+    
+            return qrCodePath;
+        } catch (WriterException | IOException e) {
+            throw new RuntimeException("Failed to generate QR code", e);
+        }
+    }
+    
 }
