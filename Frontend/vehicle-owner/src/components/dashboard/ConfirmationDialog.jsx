@@ -6,7 +6,7 @@ const ConfirmationDialog = ({ open, onClose, onConfirm, title, message }) => {
   if (!open) return null; 
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50">
+    <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm bg-black/10">
       {/* Dialog Box */}
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
         {/* Title */}
