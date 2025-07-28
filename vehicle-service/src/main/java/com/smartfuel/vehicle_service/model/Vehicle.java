@@ -20,7 +20,6 @@ public class Vehicle {
     private String vehicleNumber;
     private String vehicleType;
     private String fuelType;
-    private String qrCode;
     private Integer fuelQuota;
     private String qrCodePath;
 

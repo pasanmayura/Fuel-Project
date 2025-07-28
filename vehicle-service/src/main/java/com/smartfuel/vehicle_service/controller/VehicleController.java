@@ -85,7 +85,6 @@ public class VehicleController {
         vehicle.setVehicleNumber(request.getVehicle().getVehicleNumber());
         vehicle.setVehicleType(request.getVehicle().getVehicleType());
         vehicle.setFuelType(request.getVehicle().getFuelType());
-        vehicle.setQrCode("QR-" + request.getVehicle().getVehicleNumber());
         vehicle.setFuelQuota(FuelQuotaUtil.getFuelQuota(request.getVehicle().getVehicleType())); 
         vehicle.setAccount(account);
         vehicleRepository.save(vehicle);
@@ -183,7 +182,6 @@ public class VehicleController {
             throw new RuntimeException("Failed to load QR code", e);
         }
     }
-
 
     private String generateQRCode(String vehicleNumber) {
         try {
