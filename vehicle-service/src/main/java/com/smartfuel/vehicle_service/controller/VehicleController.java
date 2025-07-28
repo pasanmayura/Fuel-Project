@@ -82,6 +82,7 @@ public class VehicleController {
         vehicle.setFirstName(request.getVehicle().getFirstName());
         vehicle.setLastName(request.getVehicle().getLastName());
         vehicle.setNic(request.getVehicle().getNic());
+        vehicle.setPhoneNumber(request.getVehicle().getPhoneNumber());
         vehicle.setVehicleNumber(request.getVehicle().getVehicleNumber());
         vehicle.setVehicleType(request.getVehicle().getVehicleType());
         vehicle.setFuelType(request.getVehicle().getFuelType());

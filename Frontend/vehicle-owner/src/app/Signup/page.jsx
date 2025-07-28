@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'; // Import useRouter
 import { UserPlus } from 'lucide-react';
 import { useState } from 'react';
-import { User, CarFront, IdCard, BusFront, Fuel, Mail, Lock, CircleUser } from 'lucide-react';
+import { User, CarFront, IdCard, BusFront, Fuel, Mail, Lock, CircleUser, Phone } from 'lucide-react';
 import SubmitButton from '@/components/auth/SubmitButton';
 import InputField from '@/components/auth/InputField';
 import { signup } from '@/service/authservice';
@@ -36,6 +36,7 @@ export default function SignUp() {
         firstName: formData.firstName,
         lastName: formData.lastName,
         nic: formData.nic,
+        phoneNumber: formData.phoneNumber,
         vehicleNumber: formData.vehicleNumber,
         vehicleType: formData.vehicleType,
         fuelType: formData.fuelType,
@@ -215,6 +216,17 @@ export default function SignUp() {
                   type="text"
                   placeholder="Username"
                   value={formData.username}
+                  onChange={handleInputChange}
+                  required={true}
+                />
+
+                {/* Phone Number */}
+                <InputField
+                  icon={<Phone className="h-5 w-5 text-indigo-500 group-focus-within:text-black transition-colors" />}
+                  name="phoneNumber"
+                  type="text"
+                  placeholder="Phone Number"
+                  value={formData.phoneNumber}
                   onChange={handleInputChange}
                   required={true}
                 />
