@@ -2,14 +2,17 @@ package com.smartfuel.station_service.controller;
 
 import com.smartfuel.station_service.model.Station;
 import com.smartfuel.station_service.model.Account;
+import com.smartfuel.station_service.dto.LoginRequestDTO;
 import com.smartfuel.station_service.dto.StationRegistrationDTO;
 import com.smartfuel.station_service.repository.AccountRepository;
 import com.smartfuel.station_service.repository.StationRepository;
+import com.smartfuel.station_service.response.LoginResponseDTO;
 import com.smartfuel.station_service.response.StationResponseDTO;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import com.smartfuel.station_service.util.JwtUtil;
 
 @RestController
 @RequestMapping("/api/stations")
@@ -23,6 +26,8 @@ public class StationController {
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @PostMapping("/register")
     public StationResponseDTO registerStation(@RequestBody StationRegistrationDTO stationRequest) {
@@ -64,6 +69,25 @@ public class StationController {
             station.getPetrolCapacity(),
             station.getDieselCapacity(),
             account.getUsername()
+        );
+    }
+
+    @PostMapping("/auth/login")
+    public LoginResponseDTO login(@RequestBody LoginRequestDTO loginRequest) {
+        Account account = accountRepository.findByUsername(loginRequest.getUsername())
+            .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
+
+        if (!passwordEncoder.matches(loginRequest.getPassword(), account.getPassword())) {
+            throw new IllegalArgumentException("Invalid username or password");
+        }
+
+        String token = jwtUtil.generateToken(account.getUsername(), account.getRole());
+
+        return new LoginResponseDTO(
+            "Login successful",
+            account.getUsername(),
+            account.getRole(),
+            token
         );
     }
 }
