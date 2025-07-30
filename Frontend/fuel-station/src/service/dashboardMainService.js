@@ -19,3 +19,12 @@ export const getFuelRevenue = async (token) => {
     const response = await axios.get(`${API_BASE_URL}/revenue/today`, config);
     return response.data;
 };
+
+// Get availble fuel
+export const getAvailableFuel = async (token) => {
+    const config = {
+        headers: { Authorization: `Bearer ${token}` },
+    };
+    const response = await axios.get(`${API_BASE_URL}/fuel/remaining-fuel`, config);
+    return response.data;
+};

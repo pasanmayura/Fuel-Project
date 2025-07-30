@@ -148,7 +148,7 @@ public class StationController {
     @GetMapping("/revenue/today")
     public Map<String, BigDecimal> getTodayRevenue(@RequestHeader("Authorization") String token) {
         // Extract stationId from the token
-        Long stationId = jwtUtil.extractStationId(token.substring(7)); // Remove "Bearer " prefix
+        Long stationId = jwtUtil.extractStationId(token.substring(7)); 
         
         logger.info("✅ Station ID from token: {}", stationId);
 
@@ -161,4 +161,22 @@ public class StationController {
             "totalRevenue", totalRevenue
         );
     }
+
+    @GetMapping("/fuel/remaining-fuel")
+    public Map<String, Integer> getRemainingFuel(@RequestHeader("Authorization") String token) {
+        Long stationId = jwtUtil.extractStationId(token.substring(7)); 
+
+        Station station = stationRepository.findById(stationId)
+            .orElseThrow(() -> new IllegalArgumentException("Station not found"));
+
+        Integer availablePetrol = station.getAvailablePetrol();
+        Integer availableDiesel = station.getAvailableDiesel();
+
+        return Map.of(
+            "availablePetrol", availablePetrol,
+            "availableDiesel", availableDiesel
+        );
+    }
 }
+
+
