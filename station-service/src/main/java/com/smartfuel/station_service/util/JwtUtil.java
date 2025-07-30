@@ -12,13 +12,14 @@ import java.util.Date;
 @Component
 public class JwtUtil {
     private final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256); // Generate a secure key
-    private final long EXPIRATION_TIME = 1000 * 60 * 60 * 5; // 5 hours
+    private final long EXPIRATION_TIME = 1000 * 60 * 60 * 10; // 10 hours
 
     // Generate a JWT token
-    public String generateToken(String username, String role) {
+    public String generateToken(String username, String role, Long stationId) {
         return Jwts.builder()
                 .setSubject(username)
                 .claim("role", role)
+                .claim("stationId", stationId)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(SECRET_KEY)
@@ -34,6 +35,10 @@ public class JwtUtil {
     // Extract username from token
     public String extractUsername(String token) {
         return extractClaims(token).getSubject();
+    }
+
+    public Long extractStationId(String token) {
+        return extractClaims(token).get("stationId", Long.class);
     }
 
     // Check if token is expired
