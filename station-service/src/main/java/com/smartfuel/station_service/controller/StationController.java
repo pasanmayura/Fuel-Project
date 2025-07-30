@@ -10,6 +10,9 @@ import com.smartfuel.station_service.response.LoginResponseDTO;
 import com.smartfuel.station_service.response.StationResponseDTO;
 
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.smartfuel.station_service.util.JwtUtil;
@@ -81,6 +84,10 @@ public class StationController {
             throw new IllegalArgumentException("Invalid username or password");
         }
 
+        if (!"StationOwner".equals(account.getRole())) {
+            throw new IllegalArgumentException("Access denied: Only Station Owners can log in");
+        }
+
         String token = jwtUtil.generateToken(account.getUsername(), account.getRole());
 
         return new LoginResponseDTO(
@@ -89,5 +96,29 @@ public class StationController {
             account.getRole(),
             token
         );
+    }
+
+    @GetMapping("/users/me")
+    public Map<String, Object> getUserDetails(@RequestHeader("Authorization") String token) {
+        String username = jwtUtil.extractUsername(token.substring(7)); // Remove "Bearer " prefix
+
+        Account account = accountRepository.findByUsername(username)
+            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        Station station = stationRepository.findByAccount(account)
+            .orElseThrow(() -> new IllegalArgumentException("Station not found for this user"));
+
+        Map<String, Object> userDetails = Map.of(
+            "username", account.getUsername(),
+            "role", account.getRole(),
+            "stationName", station.getStationName(),
+            "location", station.getLocation(),
+            "petrolCapacity", station.getPetrolCapacity(),
+            "dieselCapacity", station.getDieselCapacity(),
+            "availablePetrol", station.getAvailablePetrol(),
+            "availableDiesel", station.getAvailableDiesel()
+        );
+
+        return userDetails;
     }
 }

@@ -21,9 +21,10 @@ public class Station {
     private String location;
     private Integer petrolCapacity;
     private Integer dieselCapacity;
+    private Integer availablePetrol;
+    private Integer availableDiesel;
 
     @ManyToOne
     @JoinColumn(name = "account_id", nullable = false)
-    private Account account;
-	
+    private Account account;	
 }
