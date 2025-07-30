@@ -10,3 +10,12 @@ export const getUserDetails = async (token) => {
     const response = await axios.get(`${API_BASE_URL}/users/me`, config);
     return response.data;
 };
+
+// Get fuel revenue
+export const getFuelRevenue = async (token) => {
+    const config = {
+        headers: { Authorization: `Bearer ${token}` },
+    };
+    const response = await axios.get(`${API_BASE_URL}/revenue/today`, config);
+    return response.data;
+};

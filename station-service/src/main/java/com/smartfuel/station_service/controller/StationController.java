@@ -5,21 +5,28 @@ import com.smartfuel.station_service.model.Account;
 import com.smartfuel.station_service.dto.LoginRequestDTO;
 import com.smartfuel.station_service.dto.StationRegistrationDTO;
 import com.smartfuel.station_service.repository.AccountRepository;
+import com.smartfuel.station_service.repository.FuelTransactionRepository;
 import com.smartfuel.station_service.repository.StationRepository;
 import com.smartfuel.station_service.response.LoginResponseDTO;
 import com.smartfuel.station_service.response.StationResponseDTO;
 
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.smartfuel.station_service.util.JwtUtil;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @RestController
 @RequestMapping("/api/stations")
 public class StationController {
+
+    private static final Logger logger = LoggerFactory.getLogger(StationController.class);
 
     @Autowired
     private StationRepository stationRepository;
@@ -28,7 +35,11 @@ public class StationController {
     private AccountRepository accountRepository;
 
     @Autowired
+    private FuelTransactionRepository fuelTransactionRepository;
+
+    @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+
     @Autowired
     private JwtUtil jwtUtil;
 
@@ -77,19 +88,31 @@ public class StationController {
 
     @PostMapping("/auth/login")
     public LoginResponseDTO login(@RequestBody LoginRequestDTO loginRequest) {
+        // Find the account by username
         Account account = accountRepository.findByUsername(loginRequest.getUsername())
             .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
 
+        // Validate the password
         if (!passwordEncoder.matches(loginRequest.getPassword(), account.getPassword())) {
             throw new IllegalArgumentException("Invalid username or password");
         }
 
+        // Check if the role is StationOwner
         if (!"StationOwner".equals(account.getRole())) {
             throw new IllegalArgumentException("Access denied: Only Station Owners can log in");
         }
 
-        String token = jwtUtil.generateToken(account.getUsername(), account.getRole());
+        // Find the station associated with the account
+        Station station = stationRepository.findByAccount(account)
+            .orElseThrow(() -> new IllegalArgumentException("Station not found for this account"));
 
+        // Generate JWT token with stationId
+        String token = jwtUtil.generateToken(account.getUsername(), account.getRole(), station.getId());
+
+        // Log the generated token
+        logger.info("✅ Generated JWT Token: {}", token);
+
+        // Return the login response
         return new LoginResponseDTO(
             "Login successful",
             account.getUsername(),
@@ -120,5 +143,22 @@ public class StationController {
         );
 
         return userDetails;
+    }
+
+    @GetMapping("/revenue/today")
+    public Map<String, BigDecimal> getTodayRevenue(@RequestHeader("Authorization") String token) {
+        // Extract stationId from the token
+        Long stationId = jwtUtil.extractStationId(token.substring(7)); // Remove "Bearer " prefix
+        
+        logger.info("✅ Station ID from token: {}", stationId);
+
+        // Get total revenue for the station
+        BigDecimal totalRevenue = fuelTransactionRepository.getTotalRevenueByStationId(stationId);
+        totalRevenue = totalRevenue != null ? totalRevenue : BigDecimal.ZERO;
+    
+        // Return the revenue details
+        return Map.of(
+            "totalRevenue", totalRevenue
+        );
     }
 }
