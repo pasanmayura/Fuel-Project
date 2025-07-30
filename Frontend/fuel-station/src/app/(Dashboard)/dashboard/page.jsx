@@ -6,10 +6,11 @@ import AlertSlider from '@/components/dashboard/main/AlertSlider';
 import Card from '@/components/dashboard/main/StatsCards';
 import ChartCard from '@/components/dashboard/main/ChartCard';
 import Transaction from '@/components/dashboard/main/Transaction';
-import { getFuelRevenue } from '@/service/dashboardMainService';
+import { getFuelRevenue, getAvailableFuel } from '@/service/dashboardMainService';
 
 const Dashboard = () => {
   const [totalRevenue, setTotalRevenue] = React.useState(0);
+  const [availableFuel, setAvailableFuel] = React.useState({ petrol: 0, diesel: 0 });
 
   useEffect(() => {
     const fetchRevenue = async () => {
@@ -17,9 +18,16 @@ const Dashboard = () => {
         const token = sessionStorage.getItem('token');
         const revenue = await getFuelRevenue(token);
         setTotalRevenue(revenue.totalRevenue);
+
+        const fuelData = await getAvailableFuel(token);
+        setAvailableFuel({
+          petrol: fuelData.availablePetrol || 0,
+          diesel: fuelData.availableDiesel || 0
+        });
       } catch (error) {
         console.error('Error fetching fuel revenue:', error);
         setTotalRevenue(0); // Fallback in case of an error
+        setAvailableFuel({ petrol: 0, diesel: 0 }); 
       }
     };
 
@@ -105,14 +113,14 @@ const Dashboard = () => {
           {/* Remaining Petrol Card */}
           <Card
             title="Remaining Petrol"
-            value="1,200L"
+            value={`${availableFuel.petrol} L`}
             icon={<Fuel className="h-6 w-6 text-blue-600" />}
           />
 
           {/* Remaining Diesel Card */}
           <Card
             title="Remaining Diesel"
-            value="800L"
+            value= {`${availableFuel.diesel} L`}
             icon={<Fuel className="h-6 w-6 text-blue-600" />}
           />          
         </div>
