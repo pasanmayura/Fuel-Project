@@ -14,6 +14,7 @@ public interface FuelTransactionRepository extends JpaRepository<FuelTransaction
     @Query("SELECT SUM(ft.totalPrice) FROM FuelTransaction ft WHERE DATE(ft.transactionTime) = CURRENT_DATE AND ft.station.id = :stationId")
     BigDecimal getTotalRevenueByStationId(Long stationId);
 
-    List<FuelTransaction> findByStationId(Long stationId);
+    @Query("SELECT ft FROM FuelTransaction ft WHERE ft.station.id = :stationId ORDER BY ft.transactionTime DESC")
+    List<FuelTransaction> findRecentTransactionsByStationId(Long stationId);
 }
 

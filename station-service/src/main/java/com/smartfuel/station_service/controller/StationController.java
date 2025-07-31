@@ -183,19 +183,23 @@ public class StationController {
 
     @GetMapping("/fuel/fuel-transactions")
     public List<FuelTransactionDTO> getFuelTransactions(@RequestHeader("Authorization") String token) {
+        // Extract stationId from the token
         Long stationId = jwtUtil.extractStationId(token.substring(7)); 
 
-        List<FuelTransaction> transactions = fuelTransactionRepository.findByStationId(stationId);
+        // Fetch recent transactions for the station
+        List<FuelTransaction> transactions = fuelTransactionRepository.findRecentTransactionsByStationId(stationId);
 
+        // Map transactions to DTOs and limit to 5
         List<FuelTransactionDTO> transactionDTOs = transactions.stream()
-        .map(tx -> new FuelTransactionDTO(
-            tx.getTransactionId(),
-            tx.getFuelType(),
-            tx.getLiters(),
-            tx.getTotalPrice(),
-            tx.getTransactionTime()
-        ))
-        .toList();
+            .limit(5) // Limit to the top 5 transactions
+            .map(tx -> new FuelTransactionDTO(
+                tx.getTransactionId(),
+                tx.getFuelType(),
+                tx.getLiters(),
+                tx.getTotalPrice(),
+                tx.getTransactionTime()
+            ))
+            .toList();
 
         return transactionDTOs;
     }
