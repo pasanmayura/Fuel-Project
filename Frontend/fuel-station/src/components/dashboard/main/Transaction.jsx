@@ -33,8 +33,8 @@ const Transaction = ({ transactions = [] }) => {
                           {transaction.fuel}
                         </span>
                       </td>
-                      <td className="py-3 px-2 text-sm text-blue-700">{transaction.liters}L</td>
-                      <td className="py-3 px-2 text-sm text-blue-900 font-semibold">₹{transaction.amount.toLocaleString()}</td>
+                      <td className="py-3 px-2 text-sm text-blue-700">{transaction.liters} L</td>
+                      <td className="py-3 px-2 text-sm text-blue-900 font-semibold">Rs. {transaction.amount.toLocaleString()}</td>
                     </tr>
                   ))}
                 </tbody>

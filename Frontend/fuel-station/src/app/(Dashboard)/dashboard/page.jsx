@@ -6,16 +6,18 @@ import AlertSlider from '@/components/dashboard/main/AlertSlider';
 import Card from '@/components/dashboard/main/StatsCards';
 import ChartCard from '@/components/dashboard/main/ChartCard';
 import Transaction from '@/components/dashboard/main/Transaction';
-import { getFuelRevenue, getAvailableFuel } from '@/service/dashboardMainService';
+import { getFuelRevenue, getAvailableFuel, getRecentTransactions } from '@/service/dashboardMainService';
 
 const Dashboard = () => {
   const [totalRevenue, setTotalRevenue] = React.useState(0);
   const [availableFuel, setAvailableFuel] = React.useState({ petrol: 0, diesel: 0 });
+  const [recentTransactions, setRecentTransactions] = React.useState([]);
 
   useEffect(() => {
-    const fetchRevenue = async () => {
+    const fetchData = async () => {
       try {
         const token = sessionStorage.getItem('token');
+
         const revenue = await getFuelRevenue(token);
         setTotalRevenue(revenue.totalRevenue);
 
@@ -24,6 +26,22 @@ const Dashboard = () => {
           petrol: fuelData.availablePetrol || 0,
           diesel: fuelData.availableDiesel || 0
         });
+
+        const transactions = await getRecentTransactions(token);
+        const mappedTransactions = transactions.map(tx => ({
+          id: tx.transactionId,
+          time: new Date(tx.transactionTime).toLocaleString([], { 
+            year: 'numeric', 
+            month: '2-digit', 
+            day: '2-digit', 
+            hour: '2-digit', 
+            minute: '2-digit' 
+          }), // Format both date and time
+          fuel: tx.fuelType,
+          liters: tx.liters,
+          amount: tx.totalPrice.toFixed(2) 
+        }));
+        setRecentTransactions(mappedTransactions.slice(0, 5)); 
       } catch (error) {
         console.error('Error fetching fuel revenue:', error);
         setTotalRevenue(0); // Fallback in case of an error
@@ -31,7 +49,7 @@ const Dashboard = () => {
       }
     };
 
-    fetchRevenue();
+    fetchData();
   }, []);
 
   // Sample data for the bar chart
@@ -43,16 +61,7 @@ const Dashboard = () => {
     { day: 'Fri', petrol: 5100, diesel: 4800 },
     { day: 'Sat', petrol: 5800, diesel: 5200 },
     { day: 'Sun', petrol: 4900, diesel: 4600 }
-  ];
-
-  // Sample recent transactions
-  const recentTransactions = [
-    { id: 'TXN001', time: '09:45 AM', fuel: 'Petrol', amount: 2500, liters: 50 },
-    { id: 'TXN002', time: '09:30 AM', fuel: 'Diesel', amount: 3200, liters: 40 },
-    { id: 'TXN003', time: '09:15 AM', fuel: 'Petrol', amount: 1800, liters: 36 },
-    { id: 'TXN004', time: '09:00 AM', fuel: 'Diesel', amount: 4000, liters: 50 },
-    { id: 'TXN005', time: '08:45 AM', fuel: 'Petrol', amount: 2200, liters: 44 }
-  ];
+  ];  
 
   const alerts = [
     {
