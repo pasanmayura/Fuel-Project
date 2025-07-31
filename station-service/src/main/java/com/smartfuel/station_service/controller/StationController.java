@@ -11,10 +11,12 @@ import com.smartfuel.station_service.repository.FuelTransactionRepository;
 import com.smartfuel.station_service.repository.StationRepository;
 import com.smartfuel.station_service.response.LoginResponseDTO;
 import com.smartfuel.station_service.response.StationResponseDTO;
+import com.smartfuel.station_service.dto.DailyRevenueDTO;
 
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -202,6 +204,27 @@ public class StationController {
             .toList();
 
         return transactionDTOs;
+    }
+
+    @GetMapping("/revenue/weekly")
+    public List<DailyRevenueDTO> getWeeklyRevenue(@RequestHeader("Authorization") String token) {
+        // Extract stationId from the token
+        Long stationId = jwtUtil.extractStationId(token.substring(7));
+
+        // Fetch revenue data for the last seven days
+        List<Object[]> results = fuelTransactionRepository.getLastSevenDaysRevenueByStationId(stationId);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd");
+
+        List<DailyRevenueDTO> revenueDTOs = results.stream()
+            .map(row -> new DailyRevenueDTO(
+                dateFormat.format(row[0]),      // Format java.sql.Date to desired format
+                (String) row[1],                // fuel_type
+                ((Number) row[2]).doubleValue() // total_revenue
+            ))
+            .toList();
+
+        return revenueDTOs;
     }
 }
 

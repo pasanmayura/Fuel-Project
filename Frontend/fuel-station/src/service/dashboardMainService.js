@@ -37,3 +37,11 @@ export const getRecentTransactions = async (token) => {
     const response = await axios.get(`${API_BASE_URL}/fuel/fuel-transactions`, config);
     return response.data;
 };
+
+export const getWeeklyRevenue = async (token) => {
+    const config = {
+        headers: { Authorization: `Bearer ${token}` },
+    };
+    const response = await axios.get(`${API_BASE_URL}/revenue/weekly`, config);
+    return response.data;
+};
