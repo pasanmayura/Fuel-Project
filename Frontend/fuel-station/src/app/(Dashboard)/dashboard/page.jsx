@@ -6,12 +6,13 @@ import AlertSlider from '@/components/dashboard/main/AlertSlider';
 import Card from '@/components/dashboard/main/StatsCards';
 import ChartCard from '@/components/dashboard/main/ChartCard';
 import Transaction from '@/components/dashboard/main/Transaction';
-import { getFuelRevenue, getAvailableFuel, getRecentTransactions } from '@/service/dashboardMainService';
+import { getFuelRevenue, getAvailableFuel, getRecentTransactions, getWeeklyRevenue } from '@/service/dashboardMainService';
 
 const Dashboard = () => {
   const [totalRevenue, setTotalRevenue] = React.useState(0);
   const [availableFuel, setAvailableFuel] = React.useState({ petrol: 0, diesel: 0 });
   const [recentTransactions, setRecentTransactions] = React.useState([]);
+  const [weeklyRevenue, setWeeklyRevenue] = React.useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,16 +53,37 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
-  // Sample data for the bar chart
-  const salesData = [
-    { day: 'Mon', petrol: 4200, diesel: 3800 },
-    { day: 'Tue', petrol: 3900, diesel: 4100 },
-    { day: 'Wed', petrol: 4600, diesel: 3900 },
-    { day: 'Thu', petrol: 4300, diesel: 4200 },
-    { day: 'Fri', petrol: 5100, diesel: 4800 },
-    { day: 'Sat', petrol: 5800, diesel: 5200 },
-    { day: 'Sun', petrol: 4900, diesel: 4600 }
-  ];  
+  useEffect(() => {
+    const fetchWeeklyRevenue = async () => {
+      try {
+        const token = sessionStorage.getItem('token');
+
+        // Fetch weekly revenue data
+        const revenueData = await getWeeklyRevenue(token);
+
+        // Transform data into chart format
+        const formattedData = revenueData.reduce((acc, revenue) => {
+          const existingDay = acc.find((item) => item.day === revenue.transactionDate);
+          if (existingDay) {
+            existingDay[revenue.fuelType.toLowerCase()] = revenue.totalRevenue;
+          } else {
+            acc.push({
+              day: revenue.transactionDate,
+              petrol: revenue.fuelType === 'Petrol' ? revenue.totalRevenue : 0,
+              diesel: revenue.fuelType === 'Diesel' ? revenue.totalRevenue : 0,
+            });
+          }
+          return acc;
+        }, []);
+
+        setWeeklyRevenue(formattedData);
+      } catch (error) {
+        console.error('Error fetching weekly revenue data:', error);
+      }
+    };
+
+    fetchWeeklyRevenue();
+  }, []); 
 
   const alerts = [
     {
@@ -137,7 +159,7 @@ const Dashboard = () => {
         {/* Bar Chart and Recent Transactions Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Bar Chart */}
-          <ChartCard data={salesData} />          
+          <ChartCard data={weeklyRevenue} />          
 
           {/* Recent Transactions */}
           <Transaction transactions={recentTransactions} />          

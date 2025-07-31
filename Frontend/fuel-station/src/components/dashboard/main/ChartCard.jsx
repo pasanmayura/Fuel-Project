@@ -12,8 +12,27 @@ const ChartCard = ({ data }) => {
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={data}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e0e7ff" />
-          <XAxis dataKey="day" stroke="#3b82f6" />
-          <YAxis stroke="#3b82f6" />
+          <XAxis 
+            dataKey="day" 
+            stroke="#3b82f6"
+            label={{
+              value: 'Last seven days (DD/MM)',
+              position: 'insideBottomRight',
+              offset: -5,
+              fill: '#1e3a8a',
+              fontSize: 12,
+            }}
+          />
+          <YAxis 
+            stroke="#3b82f6" 
+            label={{
+              value: 'Fuel Sold (L)',
+              angle: -90,
+              position: 'insideLeft',
+              fill: '#1e3a8a',
+              fontSize: 12,
+            }}
+          />
           <Tooltip
             contentStyle={{
               backgroundColor: '#eff6ff',
