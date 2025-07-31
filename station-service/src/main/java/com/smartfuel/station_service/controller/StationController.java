@@ -2,6 +2,8 @@ package com.smartfuel.station_service.controller;
 
 import com.smartfuel.station_service.model.Station;
 import com.smartfuel.station_service.model.Account;
+import com.smartfuel.station_service.model.FuelTransaction;
+import com.smartfuel.station_service.dto.FuelTransactionDTO;
 import com.smartfuel.station_service.dto.LoginRequestDTO;
 import com.smartfuel.station_service.dto.StationRegistrationDTO;
 import com.smartfuel.station_service.repository.AccountRepository;
@@ -13,6 +15,7 @@ import com.smartfuel.station_service.response.StationResponseDTO;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -176,6 +179,25 @@ public class StationController {
             "availablePetrol", availablePetrol,
             "availableDiesel", availableDiesel
         );
+    }
+
+    @GetMapping("/fuel/fuel-transactions")
+    public List<FuelTransactionDTO> getFuelTransactions(@RequestHeader("Authorization") String token) {
+        Long stationId = jwtUtil.extractStationId(token.substring(7)); 
+
+        List<FuelTransaction> transactions = fuelTransactionRepository.findByStationId(stationId);
+
+        List<FuelTransactionDTO> transactionDTOs = transactions.stream()
+        .map(tx -> new FuelTransactionDTO(
+            tx.getTransactionId(),
+            tx.getFuelType(),
+            tx.getLiters(),
+            tx.getTotalPrice(),
+            tx.getTransactionTime()
+        ))
+        .toList();
+
+        return transactionDTOs;
     }
 }
 

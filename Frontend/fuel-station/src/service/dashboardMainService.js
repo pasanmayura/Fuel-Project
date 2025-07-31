@@ -28,3 +28,12 @@ export const getAvailableFuel = async (token) => {
     const response = await axios.get(`${API_BASE_URL}/fuel/remaining-fuel`, config);
     return response.data;
 };
+
+// Get recent transactions
+export const getRecentTransactions = async (token) => {
+    const config = {
+        headers: { Authorization: `Bearer ${token}` },
+    };
+    const response = await axios.get(`${API_BASE_URL}/fuel/fuel-transactions`, config);
+    return response.data;
+};
