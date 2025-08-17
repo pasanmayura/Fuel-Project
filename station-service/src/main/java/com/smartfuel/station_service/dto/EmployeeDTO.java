@@ -8,7 +8,7 @@ public class EmployeeDTO {
     private String lastName;
     private String email;
     private String phone;
-    private String stationName;
+    private Long stationId; 
     private String position;
     private String address;
     private String username;

@@ -3,8 +3,11 @@ package com.smartfuel.station_service.controller;
 import com.smartfuel.station_service.dto.EmployeeDTO;
 import com.smartfuel.station_service.model.Account;
 import com.smartfuel.station_service.model.Employee;
+import com.smartfuel.station_service.model.Station;
 import com.smartfuel.station_service.repository.AccountRepository;
 import com.smartfuel.station_service.repository.EmployeeRepositorary;
+import com.smartfuel.station_service.repository.StationRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +24,9 @@ public class EmployeeController {
     private AccountRepository accountRepository;
 
     @Autowired
+    private StationRepository stationRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @PostMapping("/register")
@@ -32,6 +38,9 @@ public class EmployeeController {
         if (accountRepository.existsByUsername(employeeDTO.getUsername())) {
             return ResponseEntity.badRequest().body("Username is already taken.");
         }
+
+        Station station = stationRepository.findById(employeeDTO.getStationId())
+                .orElseThrow(() -> new IllegalArgumentException("Station not found for the given ID."));
 
         // Create a new Account entity
         Account account = new Account();
@@ -46,10 +55,10 @@ public class EmployeeController {
         employee.setFirstName(employeeDTO.getFirstName());
         employee.setLastName(employeeDTO.getLastName());
         employee.setEmail(employeeDTO.getEmail());
-        employee.setPhone(employeeDTO.getPhone());
-        employee.setStationName(employeeDTO.getStationName());
+        employee.setPhone(employeeDTO.getPhone());        
         employee.setPosition(employeeDTO.getPosition());
         employee.setAddress(employeeDTO.getAddress());
+        employee.setStation(station);
         employee.setAccount(account);
 
         employeeRepository.save(employee);

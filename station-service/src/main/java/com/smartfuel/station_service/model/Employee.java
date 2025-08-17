@@ -18,9 +18,12 @@ public class Employee {
     private String lastName;
     private String email;
     private String phone;
-    private String stationName;
     private String position;
     private String address;
+
+    @ManyToOne
+    @JoinColumn(name = "station_id", nullable = false) 
+    private Station station;
 
     @ManyToOne
     @JoinColumn(name = "account_id", nullable = false)
